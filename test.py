@@ -36,3 +36,23 @@ options = st.multiselect(
     ['spring-boot-starter-data-jpa', 'spring-boot-starter-data-jdbc', 'lombok', 'spring-boot-starter-test'],
     default=st.session_state.selected_options
 )
+
+# st.multiselect 초기화
+options = st.multiselect(
+    'filter',
+    checkbox_labels,
+    default=[]
+)
+
+
+# 세션 상태 초기화
+if 'selected_options' not in st.session_state:
+    st.session_state.selected_options = []
+
+# 옵션이 변경될 때 세션 상태 업데이트
+st.session_state.selected_options = options
+
+# st.sidebar.checkbox 업데이트
+for label in checkbox_labels:
+    checked = label in options
+    st.sidebar.checkbox(label, value=checked, key=label)
