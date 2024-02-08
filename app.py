@@ -20,9 +20,7 @@ st.subheader(
   'results'
 )
 
-'''
-branch 'geemgaeun' codes
-'''
+## branch geemgaeun codes 
 
 # 왼쪽 사이드바
 st.sidebar.header('filter')
@@ -58,9 +56,9 @@ options = st.multiselect(
     default=st.session_state.selected_options
 )
 
-'''
-branch 'kjy' codes
-'''
+
+## branch 'kjy' codes
+
 
 # 샘플 데이터프레임 생성
 data = {'document': [
