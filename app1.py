@@ -85,3 +85,6 @@ if return_value['selected_rows']:
     st.write(f"Selected System Name: {doc_name}")
 else:
     st.write("")
+
+st.subheader(':sob:')
+st.button('SOS')
