@@ -17,19 +17,21 @@ data = {
 }
 df = pd.DataFrame(data)
 
-#제목 
-st.title("IssueTree Search")
+# 제목
+st.markdown("<h1 style='text-align: center; color: black;'>IssueTree Search</h1>", unsafe_allow_html=True)
 
-#text input: 오류 메시지 input
+# text input: 오류 메시지 input
+st.subheader("search")
 search_text = st.text_input(
-    '오류메시지 검색',
-    placeholder='오류메시지를 입력해주세요 ',
-    help='Help message goes here'
+    "",
+    placeholder='search..',
+    help='Help message goes here',
+    label_visibility="collapsed"
 )
 
 options = df['document'].unique().tolist()
 
-#filter
+# 필터
 with st.expander('Filter'):
     col1, col2 = st.columns(2)
 
@@ -44,6 +46,7 @@ with st.expander('Filter'):
         tag_library = st_tags(
             text='',
             label='library',
+            suggestions=['JPA', 'lombok', 'jdbc'],
             key='2',
             )
 
@@ -68,8 +71,7 @@ a_date_start = datetime.datetime.combine(a_date[0], datetime.datetime.min.time()
 a_date_end = datetime.datetime.combine(a_date[1], datetime.datetime.max.time())
 filtered_df = filtered_df[pd.to_datetime(filtered_df['date']).between(a_date_start, a_date_end)]
 
-
-#부제목(결과)
+# 부제목(결과)
 st.subheader('results')
 
 # Configure grid options using GridOptionsBuilder
@@ -86,5 +88,6 @@ if return_value['selected_rows']:
 else:
     st.write("")
 
+# sos 버튼
 st.subheader(':sob:')
 st.button('SOS')
