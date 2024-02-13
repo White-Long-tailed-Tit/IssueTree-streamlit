@@ -1,7 +1,7 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-def main_page():
+def main_page(): #메인페이지 
     st.title("IssueTree Search")
 
     search_text = st.text_input(
@@ -12,18 +12,17 @@ def main_page():
 
     st.subheader('results')
 
-def main():
+def side(): #사이드바 실행 함수 
     with st.sidebar:
         selected = option_menu("Main Menu", ["Home", 'DashBoard','Settings'], 
             icons=['house','bar-chart', 'gear'], menu_icon="cast", default_index=0)
 
     if selected == "Home":
-        main_page()
+        main_page() #홈이 선택되면 main_page를 보여줌 
     elif selected == "DashBoard":
         st.write("Dashboard is selected")
     elif selected == "Settings":
         st.write("Settings is selected")
 
-if __name__ == "__main__":
-    main()
 
+# import side from side.py 방식으로 불러와서 app.py에서 side() 사용하시면 됨 
