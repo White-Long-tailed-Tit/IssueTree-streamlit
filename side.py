@@ -7,6 +7,9 @@ from streamlit_tags import st_tags
 import streamlit.components.v1 as components
 
 def main_page():
+    #title
+    st.markdown("<h1 style='text-align: center; color: black;'>IssueTree Search</h1>", unsafe_allow_html=True)
+
 
     data = {
         'document': [
@@ -99,6 +102,10 @@ def main_page():
             st.write("")
 
 def dashboard(): # 대시보드 페이지 실행 함수
+    #title
+    st.markdown("<h1 style='text-align: center; color: black;'>Dashboard</h1>", unsafe_allow_html=True)
+
+
     iframeHTML = """
     <p 
         align="center"
