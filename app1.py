@@ -18,7 +18,7 @@ data = {
 df = pd.DataFrame(data)
 
 #제목 
-st.title("IssueTree Search")
+st.markdown("<h1 style='text-align: center; color: black;'>IssueTree Search</h1>", unsafe_allow_html=True)
 
 #text input: 오류 메시지 input
 search_text = st.text_input(
