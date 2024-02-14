@@ -49,13 +49,14 @@ with st.expander('Filter'):
     
     min_date = datetime.datetime(2010,1,1)
     max_date = datetime.date.today()
-    a_date = st.date_input("date",(min_date, max_date),key='num')
+    a_date = st.date_input("date",(min_date, max_date), key='d_key')
     if len(a_date) != 2:
         st.stop()
 
     # 날짜 초기화 버튼
     def reset():
-        st.session_state.num = (min_date, max_date)  
+        st.session_state.d_key = (min_date, max_date)  
+
     st.button('reset the date', on_click=reset)
     
 
