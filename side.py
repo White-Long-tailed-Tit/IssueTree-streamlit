@@ -4,6 +4,7 @@ import datetime
 from streamlit_option_menu import option_menu
 from st_aggrid import AgGrid, GridOptionsBuilder
 from streamlit_tags import st_tags
+import streamlit.components.v1 as components
 
 def main_page():
 
@@ -97,6 +98,13 @@ def main_page():
         else:
             st.write("")
 
+def dashboard(): # 대시보드 페이지 실행 함수
+    iframeHTML = """
+    https://smw-whiteeye.kb.us-west-2.aws.found.io:9243/app/dashboards#/view/14342cf1-162e-4a2c-b042-a8328b0232eb?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A60000)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow)) 
+    """
+    
+    components.iframe(iframeHTML, width=800, height=600)
+
 def side(): #사이드바 실행 함수 
     with st.sidebar:
         selected = option_menu("Main Menu", ["Home", 'DashBoard','Settings'], 
@@ -105,7 +113,7 @@ def side(): #사이드바 실행 함수
     if selected == "Home":
         main_page() #홈이 선택되면 main_page를 보여줌 
     elif selected == "DashBoard":
-        st.write("Dashboard is selected")
+        dashboard()
     elif selected == "Settings":
         st.write("Settings is selected")
 
