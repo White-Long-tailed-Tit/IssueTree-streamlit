@@ -77,20 +77,23 @@ filtered_df = filtered_df[pd.to_datetime(filtered_df['date']).between(a_date_sta
 #부제목(결과)
 st.subheader('results')
 
-# Configure grid options using GridOptionsBuilder
-builder = GridOptionsBuilder.from_dataframe(filtered_df)
-builder.configure_pagination(enabled=True)
-builder.configure_selection(selection_mode='single', use_checkbox=False)
-grid_options = builder.build()
-
-# Display AgGrid
-return_value = AgGrid(filtered_df, gridOptions=grid_options)
-if return_value['selected_rows']:
-    doc_name = return_value['selected_rows'][0]['document']
-    st.write(f"Selected System Name: {doc_name}")
+# 결과값이 없는 경우 처리
+if filtered_df.empty:
+    st.write("We couldn't find anything for",search_text,':sob:')
+    # sos 버튼
+    st.subheader('need help?')
+    st.button('SOS')
 else:
-    st.write("")
+    # Configure grid options using GridOptionsBuilder
+    builder = GridOptionsBuilder.from_dataframe(filtered_df)
+    builder.configure_pagination(enabled=True)
+    builder.configure_selection(selection_mode='single', use_checkbox=False)
+    grid_options = builder.build()
 
-# sos 버튼
-st.subheader(':sob:')
-st.button('SOS')
+    # Display AgGrid
+    return_value = AgGrid(filtered_df, gridOptions=grid_options)
+    if return_value['selected_rows']:
+        doc_name = return_value['selected_rows'][0]['document']
+        st.write(f"Selected System Name: {doc_name}")
+    else:
+        st.write("")
