@@ -100,10 +100,21 @@ def main_page():
 
 def dashboard(): # 대시보드 페이지 실행 함수
     iframeHTML = """
-    https://smw-whiteeye.kb.us-west-2.aws.found.io:9243/app/dashboards#/view/14342cf1-162e-4a2c-b042-a8328b0232eb?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A60000)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow)) 
+    <p 
+        align="center"
+        height="500"
+        width="100%"
+    >
+        <iframe
+        style="border:none"
+        height="500"
+        width="100%"
+            src="https://smw-whiteeye.kb.us-west-2.aws.found.io:9243/app/dashboards#/view/14342cf1-162e-4a2c-b042-a8328b0232eb?embed=true&_g=(refreshInterval%3A(pause%3A!t%2Cvalue%3A60000)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))"> 
+        </iframe>
+    </p>
     """
     
-    components.iframe(iframeHTML, width=800, height=600)
+    components.html(iframeHTML, height=500 )
 
 def side(): #사이드바 실행 함수 
     with st.sidebar:
