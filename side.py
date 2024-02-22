@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import datetime
 from streamlit_option_menu import option_menu
-from st_aggrid import AgGrid, GridOptionsBuilder
 from streamlit_tags import st_tags
 import streamlit.components.v1 as components
 
@@ -80,26 +79,43 @@ def main_page():
     #부제목(결과)
     st.subheader('results')
 
+    def dataframe_with_selections(df):
+        df_with_selections = df.copy()
+        df_with_selections.insert(0, "Select", False)
+        edited_df = st.data_editor(
+            df_with_selections,
+            width=1500,
+            hide_index=True,
+            column_config={"Select": st.column_config.CheckboxColumn(required=True)},
+            disabled=df.columns,
+        )
+        selected_rows = df[edited_df.Select]
+        return {"selected_rows": selected_rows}
+
     # 결과값이 없는 경우 처리
     if filtered_df.empty:
         st.write("We couldn't find anything :sob:")
         # sos 버튼
         st.subheader('need help?')
-        st.button('SOS')
-    else:
-        # Configure grid options using GridOptionsBuilder
-        builder = GridOptionsBuilder.from_dataframe(filtered_df)
-        builder.configure_pagination(enabled=True)
-        builder.configure_selection(selection_mode='single', use_checkbox=False)
-        grid_options = builder.build()
+        with st.expander('**Request Body**'):
+            with st.form('Request Body'):
+                st.text_input('Reporter Name')
+                st.text_input('Package Name')
+                st.text_input('Error Message')
+                st.text_input('Manager Github Id')
+                st.text_input('Comment')
+                st.text_input('Stack')
+                st.text_input('Version')
 
-        # Display AgGrid
-        return_value = AgGrid(filtered_df, gridOptions=grid_options)
-        if return_value['selected_rows']:
-            doc_name = return_value['selected_rows'][0]['document']
-            st.write(f"Selected System Name: {doc_name}")
-        else:
-            st.write("")
+                #submit button
+                submitted = st.form_submit_button('SOS')
+
+    else:
+        selection = dataframe_with_selections(df)
+        if selection['selected_rows'] is not None and not selection['selected_rows'].empty:
+            doc_name = selection['selected_rows'].iloc[0]['document']
+            st.write(f"Selected Document: {doc_name}")
+
 
 def dashboard(): # 대시보드 페이지 실행 함수
     #title
@@ -119,6 +135,7 @@ def side(): #사이드바 실행 함수
         dashboard()
     elif selected == "Settings":
         st.write("Settings is selected")
+
 
 
 # import side from side.py 방식으로 불러와서 app.py에서 side() 사용하시면 됨 
