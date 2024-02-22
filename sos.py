@@ -26,20 +26,22 @@ base_file_path='com/example/demo/'
 '''
 
 #test용 
-owner = 'White-Long-tailed-Tit'
-repo = 'IssueTree-Spring'
-branch = 'main'
-base_file_path='com\wltt\issuetree'
+# owner = 'White-Long-tailed-Tit'
+# repo = 'IssueTree-Spring'
+# branch = 'main'
+# base_file_path='com\wltt\issuetree'
 
-packages=['question','Member']
-sub_packages=['controller','domain','repository','service']
+packages=['question','Member','login']
+sub_packages=['controller','domain','repository','service','oauth']
 
 
-def parsing(search_text):
+def parsing(search_text,owner,repo,base_file_path):
     isrepo=False
     isfile=False
     isLine=False #라인 넘버 추출가능한 에러인가? 
     line=None
+
+    print(search_text)
 
     # 레포지토리명 존재 판단 
     if repo in search_text:
@@ -55,6 +57,9 @@ def parsing(search_text):
     #     if sub in search_text:
     #         issub=True
     #         sub_path=sub
+        
+    print(isrepo)
+    print(isfile)
 
     # 패키지명과 검색 문자열이 모두 존재하는지 확인하고 패키지명 반환
     if isrepo and isfile: #모두 True이면 
@@ -99,7 +104,7 @@ def parsing(search_text):
                 
                 # for example file_structure: src/main/java/com/wltt/issuetree/question/controller
                 file_path="src\\main\\java\\"+pre_file_path+file_name+".java"
-                package="com.wltt.issuetree."+package
+                package="com.apps.pochack"+package
                 file_path=file_path.replace("\\", "/")
                 print(file_path)
                 return package, file_path, isLine,line 
@@ -107,14 +112,14 @@ def parsing(search_text):
     return None, None, isLine, None
 
 
-# parsing 테스트 
-error_message_example = """
-org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'questionController' defined in file [C:\\github\\IssueTree-Spring\\out\\production\\classes\\com\\wltt\\issuetree\\question\\controller\\QuestionController.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'questionService' defined in file [C:\\github\\IssueTree-Spring\\out\\production\\classes\\com\\wltt\\issuetree\\question\\service\\QuestionService.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'questionRepository' defined in com.wltt.issuetree.question.domain.repository.QuestionRepository defined in @EnableElasticsearchRepositories declared on ElasticsearchRepositoriesRegistrar.EnableElasticsearchRepositoriesConfiguration: Invocation of init method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.data.elasticsearch.repository.support.SimpleElasticsearchRepository]: Constructor threw exception; nested exception is org.springframework.data.elasticsearch.UncategorizedElasticsearchException: java.util.concurrent.ExecutionException: java.net.ConnectException: Timeout connecting to [682fb71161354b0d812e6c2d5f5fc8ca.us-west-2.aws.found.io/52.26.59.44:443]; nested exception is ElasticsearchException[java.util.concurrent.ExecutionException: java.net.ConnectException: Timeout connecting to [682fb71161354b0d812e6c2d5f5fc8ca.us-west-2.aws.found.io/52.26.59.44:443]]; nested: ExecutionException[java.net.ConnectException: Timeout connecting to [682fb71161354b0d812e6c2d5f5fc8ca.us-west-2.aws.found.io/52.26.59.44:443]]; nested: ConnectException[Timeout connecting to [682fb71161354b0d812e6c2d5f5fc8ca.us-west-2.aws.found.io/52.26.59.44:443]];
-"""
-package,file_path,isLine,line=parsing(error_message_example)
-print(package)
-print(file_path)
-print(line)
+# # parsing 테스트 
+# error_message_example = """
+# org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'questionController' defined in file [C:\\github\\IssueTree-Spring\\out\\production\\classes\\com\\wltt\\issuetree\\question\\controller\\QuestionController.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'questionService' defined in file [C:\\github\\IssueTree-Spring\\out\\production\\classes\\com\\wltt\\issuetree\\question\\service\\QuestionService.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'questionRepository' defined in com.wltt.issuetree.question.domain.repository.QuestionRepository defined in @EnableElasticsearchRepositories declared on ElasticsearchRepositoriesRegistrar.EnableElasticsearchRepositoriesConfiguration: Invocation of init method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.data.elasticsearch.repository.support.SimpleElasticsearchRepository]: Constructor threw exception; nested exception is org.springframework.data.elasticsearch.UncategorizedElasticsearchException: java.util.concurrent.ExecutionException: java.net.ConnectException: Timeout connecting to [682fb71161354b0d812e6c2d5f5fc8ca.us-west-2.aws.found.io/52.26.59.44:443]; nested exception is ElasticsearchException[java.util.concurrent.ExecutionException: java.net.ConnectException: Timeout connecting to [682fb71161354b0d812e6c2d5f5fc8ca.us-west-2.aws.found.io/52.26.59.44:443]]; nested: ExecutionException[java.net.ConnectException: Timeout connecting to [682fb71161354b0d812e6c2d5f5fc8ca.us-west-2.aws.found.io/52.26.59.44:443]]; nested: ConnectException[Timeout connecting to [682fb71161354b0d812e6c2d5f5fc8ca.us-west-2.aws.found.io/52.26.59.44:443]];
+# """
+# package,file_path,isLine,line=parsing(error_message_example)
+# print(package)
+# print(file_path)
+# print(line)
 
 #parsing test : line 넘버 추출 가능한 경우 
 # error_message_example2='''
@@ -213,17 +218,18 @@ def send_form(reporter_name,error_message,comment,stack,version,package_name=Non
 
     # POST 요청 보낼 데이터
     data = {
-        'reporter_name': reporter_name,
-        'package_name': package_name,
-        'error_message': error_message,
-        'manager_github_id': manager_github_id,
+        'reporterName': reporter_name,
+        'packageName': package_name,
+        'errorMessage': error_message,
+        'managerGithubId': manager_github_id,
         'comment': comment,
         'stack': stack,
         'version': version
     }
+    print(data)
 
-    # POST 요청 보내기
-    response = requests.post(url, data=data)
+    # POST 요청 보내기 (JSON 형식으로 데이터 전송)
+    response = requests.post(url, json=data)
 
     # 응답 확인
     if response.status_code == 200:
