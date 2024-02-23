@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import datetime
+from datetime import datetime, date
 from streamlit_option_menu import option_menu
 from streamlit_tags import st_tags
 import streamlit.components.v1 as components
@@ -8,24 +8,29 @@ import es_con
 import sos
 import json
 import re 
+import search
+
+result_show=True
 
 def main_page():
+    
     #title
     st.markdown("<h1 style='text-align: center; color: black;'>IssueTree Search</h1>", unsafe_allow_html=True)
 
-    data=es_con.connect() #elasticsearch 연결 후 전체 데이터 목록 
+    # data=es_con.connect() #elasticsearch 연결 후 전체 데이터 목록 
     
-    df = pd.DataFrame(data)
+    # df = pd.DataFrame(data)
 
     # 검색 변수들 초기화 
     author_name=None
     author_email=None
+    
 
     # GitHub 저장소 정보
     owner = 'APPS-sookmyung'
     repo = '2023-POCHAK-server'
     branch = 'develop-mysql'
-    token = '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'
+    token = GIT_TOK
     base_file_path='com\\apps\pochak'
 
     #text input: 오류 메시지 input
@@ -58,8 +63,9 @@ def main_page():
                 key='2'
             )
         
-        min_date = datetime.datetime(2010,1,1)
-        max_date = datetime.date.today()
+        min_date = datetime(2010,1,1)
+        max_date = datetime.today()
+
         a_date = st.date_input("date",(min_date, max_date), key='d_key')
         if len(a_date) != 2:
             st.stop()
@@ -89,7 +95,15 @@ def main_page():
     # #filtered_df = filtered_df[pd.to_datetime(filtered_df['lastModifiedDate']).between(a_date_start, a_date_end)]
 
     ####
-    filtered_df=True
+    issearch,df=search.search(selected_library,tag_version,search_text)
+    
+    if issearch: 
+        filtered_df=True
+    else:
+        filtered_df=False 
+    
+    df=pd.DataFrame(df)
+    
 
 
 
@@ -109,12 +123,15 @@ def main_page():
         )
         selected_rows = df[edited_df.Select]
         return {"selected_rows": selected_rows}
-
-    # 결과값이 없는 경우 처리
-    if not filtered_df:
-        st.write("We couldn't find anything :sob:")
+    
+    def sos_page():
+        
         # sos 버튼
         st.subheader('need help?')
+        author_name=None
+        author_email=None
+        package=None
+        file_path=None
 
         # 에러 메시지 parsing
         package, file_path, isLine,line =sos.parsing(search_text,owner,repo,base_file_path)
@@ -128,7 +145,7 @@ def main_page():
             if isLine: #라인 넘버 추출 가능한 오류 메시지인 경우 
                 blame_data=sos.get_git_blame_line(owner, repo, file_path, token, branch)
                 # JSON 문자열을 파이썬 딕셔너리로 변환
-                blame_data_dict = json.loads(blame_data)
+                blame_data_dict = blame_data
 
                 # line 값이 있는지 확인하고 해당하는 author의 name과 email 추출
                 for range_data in blame_data_dict['data']['repository']['object']['blame']['ranges']:
@@ -165,11 +182,65 @@ def main_page():
                     sos.send_form(reporter_name,error_msg,comment,stack,version,package_input,manager)
 
 
+    # 결과값이 없는 경우 처리
+    if filtered_df==False:
+        st.write("We couldn't find anything :sob:")
+        sos_page()
     else:
         selection = dataframe_with_selections(df)
+        
+
         if selection['selected_rows'] is not None and not selection['selected_rows'].empty:
-            doc_name = selection['selected_rows'].iloc[0]['issue']
-            st.write(f"Selected Document: {doc_name}")
+
+            def format_date(date_str):
+                # 입력된 날짜 문자열을 파싱하여 datetime 객체로 변환
+                parsed_date = datetime.strptime(date_str[:8], '%Y%m%d')
+                # 원하는 형식으로 출력
+                formatted_date = parsed_date.strftime('%Y/%m/%d')
+                return formatted_date
+            
+            issue_row = selection['selected_rows'].iloc[0]['issue']
+            CDate_row = selection['selected_rows'].iloc[0]['createdDate']
+            lMDate_row = selection['selected_rows'].iloc[0]['lastModifiedDate']
+            questioner_row = selection['selected_rows'].iloc[0]['questioner']
+            solve_row = selection['selected_rows'].iloc[0]['solve']
+            stack_row = selection['selected_rows'].iloc[0]['stack']
+            version_row = selection['selected_rows'].iloc[0]['version']
+
+            # formatted_CDate = format_date(CDate_row)
+            # formatted_lMDate = format_date(lMDate_row)
+
+            st.subheader("")
+
+            container = st.container(border=True)
+            container.subheader('issue')
+            container.write(issue_row)
+            container.write("")
+
+            col1, col2, col3 = container.columns(3)
+            with col1:
+                st.subheader('stack')
+                st.write(stack_row)
+            with col2:
+                st.subheader('version')
+                st.write(version_row)
+
+            col1, col2, col3 = container.columns(3)
+            with col1:
+                st.subheader('created date')
+                st.write(CDate_row)
+            with col2:
+                st.subheader('last modified date')
+                st.write(lMDate_row)
+            with col3:
+                st.subheader('questioner')
+                st.write(questioner_row)
+
+            container.write("")
+            container.subheader('solve')
+            container.write(solve_row)
+
+        sos_page()
 
 
 def dashboard(): # 대시보드 페이지 실행 함수
