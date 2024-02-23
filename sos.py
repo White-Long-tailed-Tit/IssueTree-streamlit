@@ -31,7 +31,7 @@ base_file_path='com/example/demo/'
 # branch = 'main'
 # base_file_path='com\wltt\issuetree'
 
-packages=['question','Member','login']
+packages=['question','Member','login','follow','comment']
 sub_packages=['controller','domain','repository','service','oauth']
 
 
@@ -40,6 +40,7 @@ def parsing(search_text,owner,repo,base_file_path):
     isfile=False
     isLine=False #라인 넘버 추출가능한 에러인가? 
     line=None
+    file_name=None
 
     print(search_text)
 
@@ -66,7 +67,7 @@ def parsing(search_text,owner,repo,base_file_path):
         for package in packages:
             if package in search_text:
                 pre_file_path=base_file_path+"\\"+package+"\\" #com\wltt\issuetree\question\controller
-                print(pre_file_path)
+                print("pre_file_path: "+pre_file_path)
                 
 
                 if pre_file_path in search_text:
@@ -97,16 +98,18 @@ def parsing(search_text,owner,repo,base_file_path):
                                 line = None
                             print(search_text[target_index:end_index])
                             print("isLine:", isLine)
+                            print("line "+str(line))
 
 
                             file_name=search_text[target_index:file_name_index]
+                            print("file name: "+file_name)
                             print(search_text[target_index:file_name_index]) #controller\MemberController 파싱 
                 
                 # for example file_structure: src/main/java/com/wltt/issuetree/question/controller
                 file_path="src\\main\\java\\"+pre_file_path+file_name+".java"
-                package="com.apps.pochack"+package
+                package="com.apps.pochack."+package
                 file_path=file_path.replace("\\", "/")
-                print(file_path)
+                print("file_path: "+file_path)
                 return package, file_path, isLine,line 
     
     return None, None, isLine, None
