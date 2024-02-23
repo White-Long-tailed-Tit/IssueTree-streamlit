@@ -30,7 +30,7 @@ def main_page():
     owner = 'APPS-sookmyung'
     repo = '2023-POCHAK-server'
     branch = 'develop-mysql'
-    token = GIT_TOK
+    token = st.secrets['GIT_TOK']
     base_file_path='com\\apps\pochak'
 
     #text input: 오류 메시지 input

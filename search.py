@@ -1,6 +1,7 @@
 import elastic_connect
 from elasticsearch import Elasticsearch
 from datetime import datetime
+import streamlit as st
 
 def search(selected_library,tag_version,search_text):
     # Elasticsearch 호스트 및 포트 설정
@@ -9,8 +10,8 @@ def search(selected_library,tag_version,search_text):
     es_scheme = "https"  
 
     # 사용자 이름과 비밀번호
-    username = ELASTIC_ID
-    password = ELASTIC_PW
+    username = st.secrets['ELASTIC_ID']
+    password = st.secrets['ELASTIC_PW']
 
     # Elasticsearch에 연결을 시도합니다.
 

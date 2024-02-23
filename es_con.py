@@ -12,8 +12,8 @@ def connect():
     es_scheme = "https"  
 
     # 사용자 이름과 비밀번호
-    username = ELASTIC_ID
-    password = ELASTIC_PW
+    username = st.secrets['ELASTIC_ID']
+    password = st.secrets['ELASTIC_PW']
 
     # Elasticsearch에 연결을 시도합니다.
     try:
